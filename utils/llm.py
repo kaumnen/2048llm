@@ -6,8 +6,8 @@ from loguru import logger
 from openai import OpenAI
 
 llm_client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key="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",
+    base_url="",
+    api_key="",
 )
 
 
