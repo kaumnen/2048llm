@@ -17,7 +17,7 @@ async def show_game():
     return FileResponse("./2048/index.html")
 
 
-@app.post("/start-game")
+@app.get("/start-game")
 async def start_game():
     playwright = await async_playwright().start()
     chromium = playwright.chromium
@@ -46,6 +46,20 @@ async def move(session_id: str, direction: int):
     _, page = active_games[session_id]
 
     await page.evaluate(f"gameManager.move({direction})")
+
+    game_state = await page.evaluate("JSON.stringify(gameManager.serialize())")
+
+    return {"game_state": game_state}
+
+
+@app.get("/get-state")
+async def get_scope(session_id: str):
+    if session_id not in active_games:
+        raise HTTPException(
+            status_code=404, detail="Session not found. Start a game first."
+        )
+
+    _, page = active_games[session_id]
 
     game_state = await page.evaluate("JSON.stringify(gameManager.serialize())")
 
