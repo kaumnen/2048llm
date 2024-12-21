@@ -1,11 +1,7 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi import HTTPException
 from playwright.async_api import async_playwright, Browser, Page
 import uuid
-import os
 import json
-from openai import OpenAI
 from loguru import logger
 
 active_games: dict[str, tuple[Browser, Page]] = {}
