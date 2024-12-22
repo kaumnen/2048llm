@@ -44,6 +44,7 @@ def system_prompt(game_table_state: str, user_prompt: str = None) -> str:
     """
 
 
+# example of a repeat_concatenation_prompt: 0, 1, 2 and 3 are available, but replying with {direction} will result in points penalty. You must reply to this message with 0, 1, 2 or 3 only, this is very important.
 def repeat_concatenation_prompt(user_prompt: str, latest_llm_direction) -> str:
     final_prompt = ""
     if user_prompt:
