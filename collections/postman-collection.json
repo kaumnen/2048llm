@@ -1,0 +1,124 @@
+{
+  "info": {
+    "name": "2048llm",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "CORE",
+      "item": [
+        {
+          "name": "move",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/core/move?session_id={{current_session_id}}&direction=0",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["core", "move"],
+              "query": [
+                {
+                  "key": "session_id",
+                  "value": "{{current_session_id}}"
+                },
+                {
+                  "key": "direction",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-state",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/core/get-state?session_id={{current_session_id}}&granularity=full",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["core", "get-state"],
+              "query": [
+                {
+                  "key": "session_id",
+                  "value": "{{current_session_id}}"
+                },
+                {
+                  "key": "granularity",
+                  "value": "full"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "start-game",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var response = pm.response.json();",
+                  "pm.environment.set(\"current_session_id\", response.session_id);"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/core/start-game",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["core", "start-game"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "LLM",
+      "item": [
+        {
+          "name": "start-llm",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8000/start-llm?session_id={{current_session_id}}",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8000",
+              "path": ["start-llm"],
+              "query": [
+                {
+                  "key": "session_id",
+                  "value": "{{current_session_id}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "current_session_id",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}
