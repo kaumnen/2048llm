@@ -32,7 +32,9 @@ async def start_llm(llm_data: InitLLMModel):
                 user_prompt += repeat_concatenation_prompt(
                     repeat_concatenation, repeat[-1]
                 )
-                print(f"new user prompt is: {user_prompt}")
+                logger.debug(
+                    f"LLM has repeated its response for {len(repeat)} times. Concatenating the main prompt and this text: {user_prompt}"
+                )
         prompt = system_prompt(str(game_state["table"]), user_prompt)
         next_direction = await _send_prompt(
             llm_client,
