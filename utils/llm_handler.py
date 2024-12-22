@@ -1,12 +1,12 @@
 from fastapi import HTTPException
-from .core import current_state, next_move, active_games
+from .basic_functions import current_state, next_move, active_games
 from .prompts import system_prompt
 from loguru import logger
 from openai import OpenAI
 
 llm_client = OpenAI(
-    base_url="",
-    api_key="",
+    base_url="http://10.0.0.7:11434/v1",
+    api_key="ollama",
 )
 
 
@@ -46,8 +46,8 @@ async def start_llm(session_id: str):
 
 async def _send_prompt(prompt: str):
     chat_completion = llm_client.chat.completions.create(
-        model="google/gemini-pro-1.5",
-        messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
+        model="llama3.2:3b",
+        messages=[{"role": "user", "content": prompt}],
     )
 
     response = chat_completion.choices[0].message.content
