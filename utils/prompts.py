@@ -1,4 +1,10 @@
-def system_prompt(game_table_state: str) -> str:
+def system_prompt(game_table_state: str, user_prompt: str = None) -> str:
+    if user_prompt:
+        try:
+            return user_prompt.format(game_table_state)
+        except KeyError:
+            return user_prompt
+
     return f"""
     You're playing 2048. The board is 4x4, and tiles with the same number merge when they touch.
 
@@ -30,7 +36,23 @@ def system_prompt(game_table_state: str) -> str:
     - Consider moves that create space for future merges
 
     Current game state: {game_table_state}
-
-    Reply with only a single digit (0, 1, 2, or 3). Any other format will be invalid.
+    
+    Reply with only a single digit (0, 1, 2, or 3). 
+    
+    Do not, under any circumstance, reply with anything else than a single digit. Do not use any special characters. If you do, you will be disqualified.
 
     """
+
+
+def repeat_concatenation_prompt(user_prompt: str, latest_llm_direction) -> str:
+    final_prompt = ""
+    if user_prompt:
+        try:
+            final_prompt = user_prompt.format(direction=latest_llm_direction)
+        except KeyError:
+            return user_prompt
+
+    return (
+        final_prompt
+        + "Do not, under any circumstance, reply with anything else than a single digit. Do not use any special characters. If you do, you will be disqualified."
+    )
