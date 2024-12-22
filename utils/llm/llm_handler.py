@@ -28,7 +28,7 @@ async def start_llm(llm_data: InitLLMModel):
 
     while game_state["over"] is False:
         if repeat_concatenation:
-            if len(repeat) > 3:
+            if len(repeat) > 2:
                 user_prompt += repeat_concatenation_prompt(
                     repeat_concatenation, repeat[-1]
                 )
