@@ -1,16 +1,23 @@
 from fastapi import HTTPException
-from .basic_functions import current_state, next_move, active_games
-from .prompts import system_prompt
+from ..basic_functions import current_state, next_move, active_games
+from ..prompts import system_prompt, repeat_concatenation_prompt
 from loguru import logger
 from openai import OpenAI
-
-llm_client = OpenAI(
-    base_url="http://10.0.0.7:11434/v1",
-    api_key="ollama",
-)
+from utils.llm.models import InitLLMModel
 
 
-async def start_llm(session_id: str):
+async def start_llm(llm_data: InitLLMModel):
+    llm_client = OpenAI(
+        base_url=llm_data.base_url,
+        api_key=llm_data.api_key,
+    )
+
+    session_id = llm_data.session_id
+
+    llm_model = llm_data.model
+    user_prompt = llm_data.prompt
+    repeat_concatenation = llm_data.repeat_concatenation
+
     repeat = []
     if session_id not in active_games:
         raise HTTPException(
@@ -20,8 +27,18 @@ async def start_llm(session_id: str):
     game_state = await current_state(session_id)
 
     while game_state["over"] is False:
-        prompt = system_prompt(str(game_state["table"]))
-        next_direction = await _send_prompt(prompt)
+        if repeat_concatenation:
+            if len(repeat) > 3:
+                user_prompt += repeat_concatenation_prompt(
+                    repeat_concatenation, repeat[-1]
+                )
+                print(f"new user prompt is: {user_prompt}")
+        prompt = system_prompt(str(game_state["table"]), user_prompt)
+        next_direction = await _send_prompt(
+            llm_client,
+            llm_model,
+            prompt,
+        )
 
         try:
             next_direction = int(next_direction)
@@ -44,9 +61,13 @@ async def start_llm(session_id: str):
             )
 
 
-async def _send_prompt(prompt: str):
+async def _send_prompt(
+    llm_client: OpenAI,
+    model: str,
+    prompt: str,
+):
     chat_completion = llm_client.chat.completions.create(
-        model="llama3.2:3b",
+        model=model,
         messages=[{"role": "user", "content": prompt}],
     )
 
