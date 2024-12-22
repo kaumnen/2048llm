@@ -27,15 +27,19 @@ async def start_llm(llm_data: InitLLMModel):
     game_state = await current_state(session_id)
 
     while game_state["over"] is False:
+        prompt = system_prompt(str(game_state["table"]), user_prompt)
+        logger.debug(f"Base prompt: {prompt}")
+
         if repeat_concatenation:
             if len(repeat) > 2:
-                user_prompt += repeat_concatenation_prompt(
+                addition_prompt = repeat_concatenation_prompt(
                     repeat_concatenation, repeat[-1]
                 )
+                prompt += addition_prompt
                 logger.debug(
-                    f"LLM has repeated its response for {len(repeat)} times. Concatenating the main prompt and this text: {user_prompt}"
+                    f"LLM has repeated its response for {len(repeat)} times. Concatenating the main prompt and this text: {addition_prompt}"
                 )
-        prompt = system_prompt(str(game_state["table"]), user_prompt)
+
         next_direction = await _send_prompt(
             llm_client,
             llm_model,
